@@ -1,0 +1,14 @@
+# Node
+node_modules/
+.env
+
+# Logs
+*.log
+
+# Build
+dist/
+build/
+
+# Mac/VS Code system files
+.DS_Store
+.vscode/
