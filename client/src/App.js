@@ -4,6 +4,10 @@ import Register from './components/Register';
 import Login from './components/Login';
 import Home from './components/Home';
 import 'bootstrap-icons/font/bootstrap-icons.css'; // Import icons
+import RecipeList from './components/RecipeList';
+import AddRecipe from './components/AddRecipe';
+import RecipeDetails from './components/RecipeDetails';
+import EditRecipe from './components/EditRecipe';
 
 function App() {
   const [theme, setTheme] = useState('light');
@@ -24,7 +28,7 @@ function App() {
 
   return (
     <Router>
-      <div>
+      <div className={`min-vh-100 ${theme === 'dark' ? 'bg-dark text-light' : 'bg-light text-dark'}`}>
         {/* Navbar */}
         <nav className={`navbar navbar-expand-lg ${theme === 'light' ? 'navbar-light bg-light' : 'navbar-dark bg-dark'} mb-4`}>
           <div className="container">
@@ -52,6 +56,10 @@ function App() {
 
             <Route path="/register" element={<Register theme={theme} />} />
             <Route path="/login" element={<Login theme={theme} />} />
+            <Route path="/recipes" element={<RecipeList theme={theme} />} />
+  <Route path="/add-recipe" element={<AddRecipe theme={theme} />} />
+  <Route path="/recipes/:id" element={<RecipeDetails theme={theme} />} />
+<Route path="/edit/:id" element={<EditRecipe theme={theme} />} />
           </Routes>
         </div>
       </div>

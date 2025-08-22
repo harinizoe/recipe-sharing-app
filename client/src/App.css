@@ -3,15 +3,45 @@ body {
   
   margin: 0;
   padding: 0;
-}
+}/* theme.css */
+
 body.light {
-  background-color: #f8f9fa;
-  color: #212529;
+  background-color: #f8f9fa; /* Light gray */
+  color: #212529; /* Bootstrap dark text */
 }
 
 body.dark {
-  background-color: #121212;
-  color: #f8f9fa;
+  background-color: #121212; /* Very dark gray */
+  color: #ffffff;
+}
+
+/* Card custom background for dark mode */
+body.dark .card {
+  background-color: #1e1e1e;
+  color: #ffffff;
+  border: 1px solid #ffffff;
+}
+
+/* Button overrides (optional for better contrast) */
+body.dark .btn-primary {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+body.dark .btn-warning {
+  background-color: #ffc107;
+  border-color: #ffc107;
+  color: #000;
+}
+
+body.dark .btn-success {
+  background-color: #198754;
+  border-color: #198754;
+}
+
+/* Add shadow for cards in dark mode */
+body.dark .card {
+  box-shadow: 0 0 10px #dfd2d20d;
 }
 
 h1, h2 {

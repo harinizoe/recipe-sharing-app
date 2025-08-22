@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-
+import { useNavigate } from "react-router-dom";
 function Login({theme}) {
   const [form, setForm] = useState({ email: '', password: '' });
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
+const navigate = useNavigate(); // ✅ define it
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -14,6 +15,8 @@ function Login({theme}) {
     try {
       const res = await axios.post('http://localhost:5000/api/users/login', form);
       alert(res.data.message || "Login successful");
+      localStorage.setItem('userId', res.data.userId);
+      navigate("/recipes");
     } catch (err) {
       alert(err.response?.data?.error || "Login failed");
     }
