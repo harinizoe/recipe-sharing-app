@@ -4,7 +4,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const userRoutes = require('./routes/userRoutes');
 const recipeRoutes = require('./routes/recipeRoutes');
-
+const reviewRoutes = require('./routes/reviewRoutes');
 dotenv.config();
 
 const app = express();
@@ -36,7 +36,7 @@ mongoose
 // ✅ API Routes
 app.use('/api/users', userRoutes);
 app.use('/api/recipes', recipeRoutes);
-
+app.use('/api/reviews', reviewRoutes);
 // ✅ Root route (optional)
 app.get('/', (req, res) => {
   res.send('API is running...');

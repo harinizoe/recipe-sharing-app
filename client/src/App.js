@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Register from './components/Register';
 import Login from './components/Login';
@@ -10,58 +10,55 @@ import RecipeDetails from './components/RecipeDetails';
 import EditRecipe from './components/EditRecipe';
 
 function App() {
-  const [theme, setTheme] = useState('light');
-
-  // Load theme from localStorage
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    setTheme(savedTheme);
-    document.body.className = savedTheme;
-  }, []);
-
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    document.body.className = newTheme;
-    localStorage.setItem('theme', newTheme);
-  };
 
   return (
     <Router>
-      <div className={`min-vh-100 ${theme === 'dark' ? 'bg-dark text-light' : 'bg-light text-dark'}`}>
+      <div className="min-vh-100 bg-light text-dark">
         {/* Navbar */}
-        <nav className={`navbar navbar-expand-lg ${theme === 'light' ? 'navbar-light bg-light' : 'navbar-dark bg-dark'} mb-4`}>
+        <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
           <div className="container">
-            <Link className="navbar-brand" to="/">Recipe App</Link>
-            <ul className="navbar-nav ms-auto d-flex flex-row gap-3">
+            <Link className="navbar-brand fw-bold text-primary" to="/">
+              <i className="bi bi-egg-fried me-2"></i>
+              Recipe App
+            </Link>
+            <ul className="navbar-nav ms-auto d-flex flex-row gap-3 align-items-center">
               <li className="nav-item">
-                <Link className="nav-link" to="/register">Register</Link>
+                <Link className="nav-link" to="/">
+                  <i className="bi bi-house me-1"></i>
+                  Home
+                </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/login">Login</Link>
+                <Link className="nav-link" to="/recipes">
+                  <i className="bi bi-collection me-1"></i>
+                  Recipes
+                </Link>
               </li>
               <li className="nav-item">
-                <button onClick={toggleTheme} className="btn btn-outline-secondary btn-sm">
-                  {theme === 'light' ? <i className="bi bi-moon-fill"></i> : <i className="bi bi-sun-fill"></i>}
-                </button>
+                <Link className="btn btn-outline-primary btn-sm" to="/register">
+                  <i className="bi bi-person-plus me-1"></i>
+                  Register
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="btn btn-primary btn-sm" to="/login">
+                  <i className="bi bi-box-arrow-in-right me-1"></i>
+                  Login
+                </Link>
               </li>
             </ul>
           </div>
         </nav>
 
-        <div className="container">
-          {/* Pass theme to child components */}
-          <Routes>
-            <Route path="/" element={<Home />} />
-
-            <Route path="/register" element={<Register theme={theme} />} />
-            <Route path="/login" element={<Login theme={theme} />} />
-            <Route path="/recipes" element={<RecipeList theme={theme} />} />
-  <Route path="/add-recipe" element={<AddRecipe theme={theme} />} />
-  <Route path="/recipes/:id" element={<RecipeDetails theme={theme} />} />
-<Route path="/edit/:id" element={<EditRecipe theme={theme} />} />
-          </Routes>
-        </div>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/recipes" element={<RecipeList />} />
+          <Route path="/add-recipe" element={<AddRecipe />} />
+          <Route path="/recipes/:id" element={<RecipeDetails />} />
+          <Route path="/edit/:id" element={<EditRecipe />} />
+        </Routes>
       </div>
     </Router>
   );
