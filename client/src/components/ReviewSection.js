@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-function ReviewSection({ recipeId, theme }) {
+function ReviewSection({ recipeId }) {
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState({ rating: 0, comment: "" });
   const [editingId, setEditingId] = useState(null);

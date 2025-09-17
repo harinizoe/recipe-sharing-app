@@ -40,11 +40,7 @@
   border-radius: 8px;
 }
 
-/* Optional theme-friendly background and text */
-.recipe-form-container.bg-dark {
-  background-color: #1e1e1e !important;
-  color: #f1f1f1;
-}
+/* Removed dark theme styles */
 
 .recipe-form-container.bg-light {
   background-color: #ffffff !important;

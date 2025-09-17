@@ -6,15 +6,10 @@ import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import { ThemeProvider } from "./ThemeContext";
-
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
- 
-<ThemeProvider>
   <App />
-</ThemeProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

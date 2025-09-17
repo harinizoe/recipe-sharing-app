@@ -1,11 +1,9 @@
-import React, { useState, useContext } from "react";
-import { ThemeContext } from "../ThemeContext"; // Optional if using context
+import React, { useState } from "react";
 import "./AddRecipe.css"; 
 import GoToRecipeListButton from './GoToRecipeListButton';
 
 import axios from "axios";
 const AddRecipe = () => {
-  const { theme } = useContext(ThemeContext); // Remove if you're passing theme as a prop
  
 
   const [recipe, setRecipe] = useState({
@@ -109,7 +107,7 @@ const handleSubmit = async (e) => {
 };
 
   return (
-    <div className={`container-fluid py-4 ${theme === "dark" ? "text-light" : "text-dark"}`}>
+    <div className="container-fluid py-4 text-dark">
       {/* Header */}
       <div className="row mb-4">
         <div className="col-12">

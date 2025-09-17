@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
-function Login({theme}) {
+function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-const navigate = useNavigate(); // ✅ define it
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,31 +23,76 @@ const navigate = useNavigate(); // ✅ define it
   };
 
   return (
-    <div className="container mt-4">
-      <form className="p-4 bg-white shadow rounded" onSubmit={handleSubmit} className={`p-4 shadow rounded ${theme === 'dark' ? 'bg-dark text-light' : 'bg-white text-dark'}`}
-      >
-        <h2 className="text-center mb-4">Login</h2>
+    <div className="min-vh-100 d-flex align-items-center" style={{background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)'}}>
+      <div className="container">
+        <div className="row justify-content-center">
+          <div className="col-lg-5 col-md-7">
+            <div className="glass-card p-5 fade-in">
+              <div className="text-center mb-4">
+                <div className="mb-3">
+                  <i className="bi bi-person-circle display-4 text-gradient-primary"></i>
+                </div>
+                <h2 className="display-6 fw-bold gradient-text mb-2">Welcome Back</h2>
+                <p className="text-muted">Sign in to your Recipe Haven account</p>
+              </div>
 
-        <input
-          className="form-control mb-3"
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
-        <input
-          className="form-control mb-3"
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
-        <button className="btn btn-primary w-100" type="submit">Login</button>
-      </form>
+              <form onSubmit={handleSubmit}>
+                <div className="mb-4">
+                  <label className="form-label fw-semibold text-muted">Email Address</label>
+                  <div className="position-relative">
+                    <i className="bi bi-envelope position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                    <input
+                      className="form-control ps-5 py-3"
+                      style={{borderRadius: 'var(--radius-lg)', border: '2px solid var(--gray-200)', fontSize: '1rem'}}
+                      type="email"
+                      name="email"
+                      placeholder="Enter your email"
+                      value={form.email}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                </div>
+                
+                <div className="mb-4">
+                  <label className="form-label fw-semibold text-muted">Password</label>
+                  <div className="position-relative">
+                    <i className="bi bi-lock position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                    <input
+                      className="form-control ps-5 py-3"
+                      style={{borderRadius: 'var(--radius-lg)', border: '2px solid var(--gray-200)', fontSize: '1rem'}}
+                      type="password"
+                      name="password"
+                      placeholder="Enter your password"
+                      value={form.password}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                </div>
+                
+                <button className="btn btn-primary w-100 py-3 mb-4 fw-bold" type="submit">
+                  <i className="bi bi-box-arrow-in-right me-2"></i>
+                  Sign In
+                </button>
+                
+                <div className="text-center">
+                  <p className="text-muted mb-0">
+                    Don't have an account? 
+                    <button 
+                      type="button" 
+                      className="btn btn-link p-0 ms-1 text-decoration-none fw-semibold"
+                      onClick={() => navigate('/register')}
+                    >
+                      Create one here
+                    </button>
+                  </p>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

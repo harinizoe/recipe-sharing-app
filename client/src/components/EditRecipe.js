@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import GoToRecipeListButton from './GoToRecipeListButton';
-const EditRecipe = ({ theme }) => {
+const EditRecipe = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [recipe, setRecipe] = useState(null);
@@ -33,7 +33,7 @@ const EditRecipe = ({ theme }) => {
   if (!recipe) return <p className="text-danger">{error || "Loading..."}</p>;
 
   return (
-    <div className={`container py-4 ${theme === 'dark' ? 'text-light bg-dark' : 'text-dark bg-light'}`}>
+    <div className="container py-4 text-dark bg-light">
       <div className="d-flex justify-content-end mb-3">
       <GoToRecipeListButton />
     </div>

@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import GoToRecipeListButton from "./GoToRecipeListButton";
 import ReviewSection from "./ReviewSection";
-const RecipeDetails = ({ theme }) => {
+const RecipeDetails = () => {
   const { id } = useParams();
   const [recipe, setRecipe] = useState(null);
   const [error, setError] = useState("");
@@ -38,7 +38,7 @@ const RecipeDetails = ({ theme }) => {
   }
 
   return (
-    <div className={`container-fluid py-4 ${theme === "dark" ? "text-light" : "text-dark"}`}>
+    <div className="container-fluid py-4 text-dark">
       {/* Header */}
       <div className="row mb-4">
         <div className="col-12">
@@ -171,7 +171,7 @@ const RecipeDetails = ({ theme }) => {
       {/* Reviews Section */}
       <div className="row">
         <div className="col-12">
-          <ReviewSection recipeId={id} theme={theme} />
+          <ReviewSection recipeId={id} />
         </div>
       </div>
     </div>
