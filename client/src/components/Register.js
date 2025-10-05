@@ -5,6 +5,7 @@ import GoogleOAuth from './GoogleOAuth';
 
 function Register() {
   const navigate = useNavigate();
+  const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5000';
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -24,7 +25,7 @@ function Register() {
     }
 
     try {
-      const res = await axios.post('http://localhost:5000/api/users/register', form);
+      const res = await axios.post(`${API_BASE}/api/users/register`, form);
       alert(res.data.message || "User registered successfully");
       navigate('/login');
     } catch (err) {
@@ -34,7 +35,7 @@ function Register() {
 
   const handleGoogleSuccess = async (userData) => {
     try {
-      const res = await axios.post('http://localhost:5000/api/users/google-auth', {
+      const res = await axios.post(`${API_BASE}/api/users/google-auth`, {
         googleId: userData.googleId,
         name: userData.name,
         email: userData.email,

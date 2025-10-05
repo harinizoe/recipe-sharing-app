@@ -12,13 +12,28 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ✅ CORS configuration to allow frontend (http://localhost:3000)
+// ✅ CORS configuration to allow local and deployed frontends
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://recipe-sharing-c36eqh2tx-harinizoes-projects.vercel.app',
+  // Add other Vercel aliases or custom domains here if applicable
+  process.env.FRONTEND_URL // optional: configure in environment
+].filter(Boolean);
+
 const corsOptions = {
-  origin: 'http://localhost:3000',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl) or same-origin
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error(`Not allowed by CORS: ${origin}`));
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   credentials: true
 };
+
 app.use(cors(corsOptions));
+// Handle preflight for all routes
+app.options('*', cors(corsOptions));
 
 // ✅ Middleware to parse JSON
 app.use(express.json());
