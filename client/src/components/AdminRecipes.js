@@ -14,20 +14,53 @@ const AdminRecipes = () => {
     servings: ''
   });
 
+  // Current logged-in user (needed for update authorization)
+  const userId = localStorage.getItem('userId');
+
   useEffect(() => {
     fetchRecipes();
+    const onFocus = () => {
+      setLoading(true);
+      fetchRecipes();
+    };
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
   }, []);
 
   const fetchRecipes = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/recipes');
-      setRecipes(res.data);
+      const params = new URLSearchParams({
+        page: '1',
+        limit: '10000',
+        sortBy: 'createdAt',
+        sortOrder: 'desc'
+      });
+      const res = await axios.get(`http://localhost:5000/api/recipes?${params.toString()}`);
+      // The API returns an object with recipes array, not a direct array
+      setRecipes(res.data.recipes || []);
     } catch (err) {
       console.error('Error fetching recipes:', err);
       alert('Error fetching recipes');
+      setRecipes([]); // Ensure recipes is always an array
     } finally {
       setLoading(false);
     }
+  };
+
+  const renderStars = (avg = 0) => {
+    const full = Math.floor(avg);
+    const hasHalf = avg - full >= 0.5;
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      if (i <= full) {
+        stars.push(<i key={i} className="bi bi-star-fill text-warning"></i>);
+      } else if (i === full + 1 && hasHalf) {
+        stars.push(<i key={i} className="bi bi-star-half text-warning"></i>);
+      } else {
+        stars.push(<i key={i} className="bi bi-star text-warning"></i>);
+      }
+    }
+    return <span className="d-inline-flex align-items-center gap-1">{stars}</span>;
   };
 
   const handleDelete = async (recipeId) => {
@@ -48,8 +81,9 @@ const AdminRecipes = () => {
     setEditForm({
       title: recipe.title,
       description: recipe.description,
-      ingredients: Array.isArray(recipe.ingredients) ? recipe.ingredients.join('\n') : recipe.ingredients,
-      instructions: Array.isArray(recipe.instructions) ? recipe.instructions.join('\n') : recipe.instructions,
+      ingredients: Array.isArray(recipe.ingredients) ? recipe.ingredients.join('\n') : (recipe.ingredients || ''),
+      // Backend uses `steps` (string). Map to our local `instructions` field for the textarea.
+      instructions: Array.isArray(recipe.steps) ? recipe.steps.join('\n') : (recipe.steps || ''),
       cookingTime: recipe.cookingTime || '',
       servings: recipe.servings || ''
     });
@@ -57,14 +91,30 @@ const AdminRecipes = () => {
 
   const handleUpdate = async (recipeId) => {
     try {
+      if (!userId) {
+        alert('You must be logged in to update a recipe.');
+        return;
+      }
+
+      // Build update payload matching backend schema
       const updateData = {
-        ...editForm,
-        ingredients: editForm.ingredients.split('\n').filter(item => item.trim()),
-        instructions: editForm.instructions.split('\n').filter(item => item.trim())
+        userId, // required by backend to authorize update
+        title: editForm.title,
+        // ingredients and steps are strings in the backend schema
+        ingredients: (editForm.ingredients || '').trim(),
+        steps: (editForm.instructions || '').trim(),
       };
+
+      // Only include servings if provided
+      if (editForm.servings !== '' && editForm.servings !== null && editForm.servings !== undefined) {
+        const parsed = Number(editForm.servings);
+        if (!Number.isNaN(parsed)) {
+          updateData.servings = parsed;
+        }
+      }
       
       const res = await axios.put(`http://localhost:5000/api/recipes/${recipeId}`, updateData);
-      setRecipes(recipes.map(recipe => recipe._id === recipeId ? res.data : recipe));
+      setRecipes(recipes.map(r => r._id === recipeId ? (res.data?.recipe || r) : r));
       setEditingRecipe(null);
       alert('Recipe updated successfully');
     } catch (err) {
@@ -102,13 +152,18 @@ const AdminRecipes = () => {
           <h2 className="display-6 fw-bold gradient-text mb-2">Recipe Management</h2>
           <p className="text-muted">Manage all recipes in the system</p>
         </div>
-        <div className="badge bg-primary px-3 py-2">
-          <i className="bi bi-collection me-2"></i>
-          {recipes.length} Recipes
+        <div className="d-flex align-items-center gap-2">
+          <button className="btn btn-outline-primary btn-sm" onClick={fetchRecipes} title="Refresh">
+            <i className="bi bi-arrow-clockwise"></i>
+          </button>
+          <div className="badge bg-primary px-3 py-2">
+            <i className="bi bi-collection me-2"></i>
+            {Array.isArray(recipes) ? recipes.length : 0} Recipes
+          </div>
         </div>
       </div>
 
-      {recipes.length === 0 ? (
+      {!Array.isArray(recipes) || recipes.length === 0 ? (
         <div className="text-center py-5">
           <i className="bi bi-collection display-4 text-muted mb-3"></i>
           <h4 className="text-muted">No recipes found</h4>
@@ -222,11 +277,19 @@ const AdminRecipes = () => {
                       <div className="mb-3">
                         <h5 className="card-title fw-bold mb-2">{recipe.title}</h5>
                         <p className="card-text text-muted small mb-2">{recipe.description}</p>
+                        {((recipe.averageRating ?? 0) > 0 || (recipe.totalRatings ?? 0) > 0) && (
+                          <div className="d-flex align-items-center mb-2">
+                            {renderStars(recipe.averageRating || 0)}
+                            <small className="text-muted ms-2">
+                              {(recipe.averageRating || 0).toFixed(1)}{recipe.totalRatings ? ` (${recipe.totalRatings})` : ''}
+                            </small>
+                          </div>
+                        )}
                         
                         <div className="d-flex justify-content-between align-items-center mb-2">
                           <small className="text-muted">
                             <i className="bi bi-person me-1"></i>
-                            By: {recipe.author?.name || 'Unknown'}
+                            By: {recipe.userId?.name || recipe.author?.name || recipe.authorName || 'Unknown'}
                           </small>
                           <small className="text-muted">
                             <i className="bi bi-people me-1"></i>

@@ -79,16 +79,61 @@ exports.updateUser = async (req, res) => {
 
 exports.deleteUser = async (req, res) => {
   try {
-    const { id } = req.params;
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    res.status(200).json({ message: 'User deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
-    const deletedUser = await User.findByIdAndDelete(id);
-    if (!deletedUser) {
-      return res.status(404).json({ message: 'User not found' });
+// Add recipe to favorites
+exports.addToFavorites = async (req, res) => {
+  try {
+    const { userId, recipeId } = req.params;
+    
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    if (!user.favorites.includes(recipeId)) {
+      user.favorites.push(recipeId);
+      await user.save();
     }
 
-    res.status(200).json({ message: 'User deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ message: 'Server error', error });
+    res.status(200).json({ message: 'Recipe added to favorites' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Remove recipe from favorites
+exports.removeFromFavorites = async (req, res) => {
+  try {
+    const { userId, recipeId } = req.params;
+    
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    user.favorites = user.favorites.filter(fav => fav.toString() !== recipeId);
+    await user.save();
+
+    res.status(200).json({ message: 'Recipe removed from favorites' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Get user's favorite recipes
+exports.getFavorites = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    const user = await User.findById(userId).populate('favorites');
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    res.status(200).json({ favorites: user.favorites });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
 

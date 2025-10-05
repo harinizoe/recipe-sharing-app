@@ -4,24 +4,20 @@ const {
   createRecipe,
   getAllRecipes,
   getRecipeById,
+  updateRecipe,
   deleteRecipe,
-  updateRecipe
+  getSearchSuggestions,
+  rateRecipe,
+  getUserRating
 } = require('../controllers/recipeController');
 
-
-
-// POST /api/recipes
 router.post('/', createRecipe);
-
-// GET /api/recipes
+router.get('/search/suggestions', getSearchSuggestions);
 router.get('/', getAllRecipes);
-
-
-
-// GET /api/recipes/:id
+router.post('/:id/rate', rateRecipe);
+router.get('/:id/rating/:userId', getUserRating);
 router.get('/:id', getRecipeById);
-
-// DELETE /api/recipes/:id
-router.delete('/:id', deleteRecipe);
 router.put('/:id', updateRecipe);
+router.delete('/:id', deleteRecipe);
+
 module.exports = router;

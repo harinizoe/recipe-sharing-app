@@ -5,6 +5,8 @@ const dotenv = require('dotenv');
 const userRoutes = require('./routes/userRoutes');
 const recipeRoutes = require('./routes/recipeRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
+const mealPlanRoutes = require('./routes/mealPlanRoutes');
+const shoppingListRoutes = require('./routes/shoppingListRoutes');
 dotenv.config();
 
 const app = express();
@@ -37,6 +39,8 @@ mongoose
 app.use('/api/users', userRoutes);
 app.use('/api/recipes', recipeRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/meal-plans', mealPlanRoutes);
+app.use('/api/shopping-lists', shoppingListRoutes);
 // ✅ Root route (optional)
 app.get('/', (req, res) => {
   res.send('API is running...');

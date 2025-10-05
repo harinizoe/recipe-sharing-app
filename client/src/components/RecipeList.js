@@ -1,32 +1,95 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import SearchModule from './SearchModule';
+import Pagination from './Pagination';
 
 const RecipeList = () => {
   const navigate = useNavigate();
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchResults, setSearchResults] = useState(null);
+  const [pagination, setPagination] = useState(null);
+  const [currentFilters, setCurrentFilters] = useState({});
+
+  const renderStars = (avg = 0) => {
+    const full = Math.floor(avg);
+    const hasHalf = avg - full >= 0.5;
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      if (i <= full) {
+        stars.push(<i key={i} className="bi bi-star-fill text-warning"></i>);
+      } else if (i === full + 1 && hasHalf) {
+        stars.push(<i key={i} className="bi bi-star-half text-warning"></i>);
+      } else {
+        stars.push(<i key={i} className="bi bi-star text-warning"></i>);
+      }
+    }
+    return <span className="d-inline-flex align-items-center gap-1">{stars}</span>;
+  };
+
+  const fetchRecipes = async () => {
+    try {
+      const res = await axios.get('http://localhost:5000/api/recipes');
+      if (res.data.recipes) {
+        setRecipes(res.data.recipes);
+        setPagination(res.data.pagination);
+      } else {
+        setRecipes(res.data);
+      }
+    } catch (err) {
+      console.error("Error fetching recipes:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchRecipes = async () => {
-      try {
-        const res = await axios.get('http://localhost:5000/api/recipes');
-        setRecipes(res.data);
-      } catch (err) {
-        console.error("Error fetching recipes:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchRecipes();
+    const onFocus = () => {
+      // Re-fetch when the tab regains focus (e.g., after rating on details page)
+      fetchRecipes();
+    };
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
   }, []);
+
+  const handleSearchResults = (results) => {
+    setSearchResults(results);
+    setRecipes(results.recipes);
+    setPagination(results.pagination);
+    setLoading(false);
+  };
+
+  const handleFiltersChange = (filters) => {
+    setCurrentFilters(filters);
+  };
+
+  const handlePageChange = async (page) => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        ...currentFilters
+      });
+      const response = await axios.get(`http://localhost:5000/api/recipes?${params}`);
+      setSearchResults(response.data);
+      setRecipes(response.data.recipes);
+      setPagination(response.data.pagination);
+    } catch (error) {
+      console.error('Error changing page:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const displayedRecipes = searchResults ? searchResults.recipes : recipes;
 
   return (
     <div className="container-fluid py-5" style={{background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)', minHeight: '100vh'}}>
       {/* Modern Header Section */}
       <div className="container">
-        <div className="row mb-5">
+        <div className="row mb-4">
           <div className="col-12">
             <div className="text-center mb-4">
               <div className="mb-3">
@@ -34,16 +97,35 @@ const RecipeList = () => {
               </div>
               <h1 className="display-4 fw-bold gradient-text mb-3">Recipe Collection</h1>
               <p className="lead text-muted mb-4">Discover and share amazing recipes from our passionate community</p>
-              <button
-                className="btn btn-primary btn-lg px-5 bounce-in"
-                onClick={() => navigate('/add-recipe')}
-              >
-                <i className="bi bi-plus-circle me-2"></i>
-                Share Your Recipe
-              </button>
+              <div className="d-flex justify-content-center gap-2">
+                <button
+                  className="btn btn-outline-secondary px-4"
+                  onClick={() => {
+                    setLoading(true);
+                    fetchRecipes();
+                  }}
+                  title="Refresh recipes"
+                >
+                  <i className="bi bi-arrow-clockwise me-2"></i>
+                  Refresh
+                </button>
+                <button
+                  className="btn btn-primary btn-lg px-5 bounce-in"
+                  onClick={() => navigate('/add-recipe')}
+                >
+                  <i className="bi bi-plus-circle me-2"></i>
+                  Share Your Recipe
+                </button>
+              </div>
             </div>
           </div>
         </div>
+
+        {/* Search Module */}
+        <SearchModule 
+          onSearchResults={handleSearchResults}
+          onFiltersChange={handleFiltersChange}
+        />
 
         {/* Loading State */}
         {loading && (
@@ -57,7 +139,7 @@ const RecipeList = () => {
         )}
 
         {/* Empty State */}
-        {!loading && recipes.length === 0 && (
+        {!loading && displayedRecipes.length === 0 && (
           <div className="text-center py-5">
             <div className="glass-card p-5 mx-auto" style={{maxWidth: '500px'}}>
               <div className="mb-4">
@@ -77,9 +159,9 @@ const RecipeList = () => {
         )}
 
         {/* Modern Recipe Grid */}
-        {!loading && recipes.length > 0 && (
+        {!loading && displayedRecipes.length > 0 && (
           <div className="row g-4">
-            {recipes.map((recipe, index) => (
+            {displayedRecipes.map((recipe, index) => (
               <div 
                 key={recipe._id} 
                 className="col-lg-4 col-md-6 col-sm-12 fade-in"
@@ -101,10 +183,17 @@ const RecipeList = () => {
                         transition: 'opacity 0.3s ease'
                       }}></div>
                       <div className="position-absolute top-0 end-0 m-3">
-                        <span className="badge glass-card px-3 py-2 text-white">
-                          <i className="bi bi-heart me-1"></i>
-                          Featured
-                        </span>
+                        {((recipe.averageRating ?? 0) > 0) ? (
+                          <span className="badge glass-card px-3 py-2 text-white d-inline-flex align-items-center gap-1">
+                            {renderStars(recipe.averageRating || 0)}
+                            <small>{(recipe.averageRating || 0).toFixed(1)}</small>
+                          </span>
+                        ) : (
+                          <span className="badge glass-card px-3 py-2 text-white">
+                            <i className="bi bi-heart me-1"></i>
+                            Featured
+                          </span>
+                        )}
                       </div>
                       <div className="position-absolute bottom-0 start-0 p-3 text-white recipe-quick-info" style={{opacity: 0, transition: 'opacity 0.3s ease'}}>
                         <small className="fw-semibold">
@@ -125,6 +214,16 @@ const RecipeList = () => {
                     <h5 className="card-title fw-bold mb-3" style={{fontSize: '1.4rem', lineHeight: '1.3'}}>
                       {recipe.title}
                     </h5>
+
+                    {/* Rating Row */}
+                    {((recipe.averageRating ?? 0) > 0 || (recipe.totalRatings ?? 0) > 0) && (
+                      <div className="d-flex align-items-center mb-3">
+                        {renderStars(recipe.averageRating || 0)}
+                        <small className="text-muted ms-2">
+                          {(recipe.averageRating || 0).toFixed(1)}{recipe.totalRatings ? ` (${recipe.totalRatings})` : ''}
+                        </small>
+                      </div>
+                    )}
                     
                     {/* Enhanced Meta Info */}
                     <div className="mb-3">
@@ -194,6 +293,12 @@ const RecipeList = () => {
             ))}
           </div>
         )}
+
+        {/* Pagination */}
+        <Pagination 
+          pagination={pagination}
+          onPageChange={handlePageChange}
+        />
       </div>
     </div>
   );

@@ -1,24 +1,28 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import axios from "axios";
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import ReviewSection from './ReviewSection';
+import RecipeRating from './RecipeRating';
+import FavoriteButton from './FavoriteButton';
+import NutritionTracker from './NutritionTracker';
+import RecipeRecommendations from './RecipeRecommendations';
 import GoToRecipeListButton from "./GoToRecipeListButton";
-import ReviewSection from "./ReviewSection";
 const RecipeDetails = () => {
   const { id } = useParams();
   const [recipe, setRecipe] = useState(null);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const fetchRecipe = async () => {
-      try {
-        const res = await axios.get(`http://localhost:5000/api/recipes/${id}`);
-        setRecipe(res.data);
-      } catch (err) {
-        setError("Failed to fetch recipe details.");
-      }
-    };
+  const fetchRecipeDetails = async () => {
+    try {
+      const res = await axios.get(`http://localhost:5000/api/recipes/${id}`);
+      setRecipe(res.data);
+    } catch (err) {
+      setError("Failed to fetch recipe details.");
+    }
+  };
 
-    fetchRecipe();
+  useEffect(() => {
+    fetchRecipeDetails();
   }, [id]);
 
   const displayField = (label, value) =>
@@ -50,6 +54,15 @@ const RecipeDetails = () => {
                 {recipe.category && <span className="badge bg-secondary">{recipe.category}</span>}
                 {recipe.difficulty && <span className="badge bg-info">{recipe.difficulty}</span>}
                 {recipe.vegetarian && <span className="badge bg-success">Vegetarian</span>}
+              </div>
+              {/* Rating Summary */}
+              <div className="mt-3">
+                <RecipeRating
+                  recipeId={id}
+                  currentRating={recipe.averageRating || 0}
+                  totalRatings={recipe.totalRatings || 0}
+                  onRatingUpdate={(avg, count) => setRecipe({ ...recipe, averageRating: avg, totalRatings: count })}
+                />
               </div>
             </div>
             <GoToRecipeListButton />
@@ -168,10 +181,25 @@ const RecipeDetails = () => {
         </div>
       </div>
 
+      {/* Nutrition Tracker */}
+      <div className="row">
+        <div className="col-12 mb-4">
+          <div className="recipe-details">
+            <h3 className="mb-3">
+              <i className="bi bi-clipboard-data me-2 text-warning"></i>
+              Nutrition
+            </h3>
+            <div className="bg-light p-3 rounded-3">
+              <NutritionTracker recipeId={id} servings={recipe.servings || 1} />
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Reviews Section */}
       <div className="row">
         <div className="col-12">
-          <ReviewSection recipeId={id} />
+          <ReviewSection recipeId={id} onChange={fetchRecipeDetails} />
         </div>
       </div>
     </div>

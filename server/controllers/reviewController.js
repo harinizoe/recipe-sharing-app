@@ -1,19 +1,20 @@
 const Review = require('../models/Review');
+// Comments-only: no rating aggregation is performed here
 
 // ➕ Add Review
 exports.addReview = async (req, res) => {
   try {
-    const { rating, comment, user } = req.body;
+    const { comment, user } = req.body;
     const { recipeId } = req.params;
 
     const review = new Review({
       recipe: recipeId,
       user: user,
-      rating: parseInt(rating),
       comment,
     });
 
     await review.save();
+
     res.status(201).json(review);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -25,7 +26,7 @@ exports.getReviews = async (req, res) => {
   try {
     const { recipeId } = req.params;
     const reviews = await Review.find({ recipe: recipeId })
-      .populate("user", "username email");
+      .populate("user", "name email");
     res.json(reviews);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -35,22 +36,19 @@ exports.getReviews = async (req, res) => {
 // ✏️ Update Review
 exports.updateReview = async (req, res) => {
   try {
-    const { rating, comment } = req.body;
+    const { comment } = req.body;
     const { id } = req.params;
     
-    console.log('Updating review:', id, { rating, comment });
+    console.log('Updating review:', id, { comment });
     
-    const updatedReview = await Review.findByIdAndUpdate(
-      id,
-      { rating: parseInt(rating), comment },
-      { new: true }
-    );
+    const updatedReview = await Review.findByIdAndUpdate(id, { comment }, { new: true });
     
     if (!updatedReview) {
       return res.status(404).json({ error: "Review not found" });
     }
     
     console.log('Updated review:', updatedReview);
+
     res.json(updatedReview);
   } catch (err) {
     console.error('Update review error:', err);
@@ -72,6 +70,7 @@ exports.deleteReview = async (req, res) => {
     }
     
     console.log('Deleted review:', deletedReview);
+
     res.json({ message: "Review deleted" });
   } catch (err) {
     console.error('Delete review error:', err);

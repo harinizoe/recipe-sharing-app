@@ -16,12 +16,35 @@ const recipeSchema = new mongoose.Schema({
   notes: { type: String },
   vegetarian: { type: String, default: "Yes" },
   userId: {
-  type: mongoose.Schema.Types.ObjectId,
-  ref: 'User',
-  required: true,
-}
-
-}, { timestamps: true },
-);
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  ratings: [{
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+    },
+    rating: {
+      type: Number,
+      required: true,
+      min: 1,
+      max: 5
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now
+    }
+  }],
+  averageRating: {
+    type: Number,
+    default: 0
+  },
+  totalRatings: {
+    type: Number,
+    default: 0
+  }
+}, { timestamps: true });
 
 module.exports = mongoose.model('Recipe', recipeSchema);
