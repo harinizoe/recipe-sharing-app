@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import ReviewSection from './ReviewSection';
 import RecipeRating from './RecipeRating';
 import FavoriteButton from './FavoriteButton';
@@ -14,7 +14,7 @@ const RecipeDetails = () => {
 
   const fetchRecipeDetails = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/recipes/${id}`);
+      const res = await api.get(`/api/recipes/${id}`);
       setRecipe(res.data);
     } catch (err) {
       setError("Failed to fetch recipe details.");

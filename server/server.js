@@ -15,25 +15,36 @@ const PORT = process.env.PORT || 5000;
 // ✅ CORS configuration to allow local and deployed frontends
 const allowedOrigins = [
   'http://localhost:3000',
+  'http://localhost:5173',
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:5173',
   'https://recipe-sharing-c36eqh2tx-harinizoes-projects.vercel.app',
-  // Add other Vercel aliases or custom domains here if applicable
   process.env.FRONTEND_URL // optional: configure in environment
 ].filter(Boolean);
 
-const corsOptions = {
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps, curl) or same-origin
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
-    return callback(new Error(`Not allowed by CORS: ${origin}`));
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  credentials: true
-};
+const isProd = process.env.NODE_ENV === 'production';
+
+const corsOptions = isProd
+  ? {
+      origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps, curl) or same-origin
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.includes(origin)) return callback(null, true);
+        return callback(new Error(`Not allowed by CORS: ${origin}`));
+      },
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+      credentials: true
+    }
+  : {
+      // In development, allow all origins to prevent local tooling/origin mismatches
+      origin: true,
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+      credentials: true
+    };
 
 app.use(cors(corsOptions));
-// Handle preflight for all routes
-app.options('*', cors(corsOptions));
+// Note: In Express 5, using a bare '*' path with app.options can break due to path-to-regexp.
+// The cors middleware will handle preflight automatically for matched routes.
 
 // ✅ Middleware to parse JSON
 app.use(express.json());

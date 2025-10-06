@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 
 const RecipeRating = ({ recipeId, currentRating = 0, totalRatings = 0, onRatingUpdate }) => {
   const [userRating, setUserRating] = useState(0);
@@ -18,13 +18,14 @@ const RecipeRating = ({ recipeId, currentRating = 0, totalRatings = 0, onRatingU
     if (!userId || !recipeId) return;
     
     try {
-      const response = await axios.get(`http://localhost:5000/api/recipes/${recipeId}/rating/${userId}`);
+      console.log('[Rating] Fetching user rating', { recipeId, userId });
+      const response = await api.get(`/api/recipes/${recipeId}/rating/${userId}`);
       if (response.data.rating) {
         setUserRating(response.data.rating);
       }
     } catch (error) {
       // User hasn't rated this recipe yet
-      console.log('No existing rating found');
+      console.log('No existing rating found or fetch error:', error?.response?.data || error.message);
     }
   };
 
@@ -36,7 +37,8 @@ const RecipeRating = ({ recipeId, currentRating = 0, totalRatings = 0, onRatingU
 
     setLoading(true);
     try {
-      const response = await axios.post(`http://localhost:5000/api/recipes/${recipeId}/rate`, {
+      console.log('[Rating] Submitting rating', { recipeId, userId, rating });
+      const response = await api.post(`/api/recipes/${recipeId}/rate`, {
         userId,
         rating
       });
@@ -49,7 +51,7 @@ const RecipeRating = ({ recipeId, currentRating = 0, totalRatings = 0, onRatingU
         onRatingUpdate(response.data.averageRating, response.data.totalRatings);
       }
     } catch (error) {
-      console.error('Error rating recipe:', error);
+      console.error('Error rating recipe:', error?.response?.data || error.message);
       alert('Failed to submit rating. Please try again.');
     } finally {
       setLoading(false);
