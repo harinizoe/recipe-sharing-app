@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 
 const FavoriteButton = ({ recipeId, size = 'md' }) => {
   const [isFavorite, setIsFavorite] = useState(false);
@@ -14,7 +14,7 @@ const FavoriteButton = ({ recipeId, size = 'md' }) => {
     if (!userId || !recipeId) return;
     
     try {
-      const response = await axios.get(`http://localhost:5000/api/users/${userId}/favorites`);
+      const response = await api.get(`/api/users/${userId}/favorites`);
       const favorites = response.data.favorites || [];
       setIsFavorite(favorites.some(fav => fav._id === recipeId));
     } catch (error) {
@@ -31,10 +31,10 @@ const FavoriteButton = ({ recipeId, size = 'md' }) => {
     setLoading(true);
     try {
       if (isFavorite) {
-        await axios.delete(`http://localhost:5000/api/users/${userId}/favorites/${recipeId}`);
+        await api.delete(`/api/users/${userId}/favorites/${recipeId}`);
         setIsFavorite(false);
       } else {
-        await axios.post(`http://localhost:5000/api/users/${userId}/favorites/${recipeId}`);
+        await api.post(`/api/users/${userId}/favorites/${recipeId}`);
         setIsFavorite(true);
       }
     } catch (error) {

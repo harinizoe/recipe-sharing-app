@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 
 const RecipeRecommendations = ({ currentRecipeId, userPreferences }) => {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ const RecipeRecommendations = ({ currentRecipeId, userPreferences }) => {
       params.append('limit', '6');
       params.append('sortBy', 'createdAt');
       
-      const response = await axios.get(`http://localhost:5000/api/recipes?${params}`);
+      const response = await api.get(`/api/recipes?${params}`);
       const recipes = response.data.recipes || response.data;
       setRecommendations(recipes.slice(0, 6));
     } catch (error) {

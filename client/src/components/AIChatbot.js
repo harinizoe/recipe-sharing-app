@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 
 const AIChatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,7 +21,7 @@ const AIChatbot = () => {
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/recipes');
+        const response = await api.get('/api/recipes');
         setRecipes(response.data.recipes || response.data);
       } catch (error) {
         console.error('Error fetching recipes:', error);

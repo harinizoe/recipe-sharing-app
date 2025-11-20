@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 
 const AdminRecipes = () => {
   const [recipes, setRecipes] = useState([]);
@@ -36,7 +36,7 @@ const AdminRecipes = () => {
         sortBy: 'createdAt',
         sortOrder: 'desc'
       });
-      const res = await axios.get(`http://localhost:5000/api/recipes?${params.toString()}`);
+      const res = await api.get(`/api/recipes?${params.toString()}`);
       // The API returns an object with recipes array, not a direct array
       setRecipes(res.data.recipes || []);
     } catch (err) {
@@ -67,7 +67,7 @@ const AdminRecipes = () => {
   const handleDelete = async (recipeId) => {
     if (window.confirm('Are you sure you want to delete this recipe?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/recipes/${recipeId}`);
+        await api.delete(`/api/recipes/${recipeId}`);
         setRecipes(recipes.filter(recipe => recipe._id !== recipeId));
         alert('Recipe deleted successfully');
       } catch (err) {
@@ -114,7 +114,7 @@ const AdminRecipes = () => {
         }
       }
       
-      const res = await axios.put(`http://localhost:5000/api/recipes/${recipeId}`, updateData);
+      const res = await api.put(`/api/recipes/${recipeId}`, updateData);
       setRecipes(recipes.map(r => r._id === recipeId ? (res.data?.recipe || r) : r));
       setEditingRecipe(null);
       alert('Recipe updated successfully');

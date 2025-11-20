@@ -12,13 +12,24 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ✅ CORS configuration to allow frontend (http://localhost:3000)
-const corsOptions = {
-  origin: 'http://localhost:3000',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
-};
-app.use(cors(corsOptions));
+// ✅ CORS configuration to allow local dev and deployed frontend(s)
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://recipe-sharing-app-rkkc.vercel.app'
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error('Not allowed by CORS'));
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+  })
+);
 
 // ✅ Middleware to parse JSON
 app.use(express.json());
@@ -48,5 +59,5 @@ app.get('/', (req, res) => {
 
 // ✅ Start server
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

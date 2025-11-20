@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
-import axios from "axios";
+import api from '../api';
 import GoToRecipeListButton from './GoToRecipeListButton';
 const EditRecipe = () => {
   const { id } = useParams();
@@ -10,8 +10,8 @@ const EditRecipe = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:5000/api/recipes/${id}`)
+    api
+      .get(`/api/recipes/${id}`)
       .then(res => setRecipe(res.data))
       .catch(() => setError("Failed to load recipe"));
   }, [id]);
@@ -30,7 +30,7 @@ const EditRecipe = () => {
         return;
       }
 
-      await axios.put(`http://localhost:5000/api/recipes/${id}`, { ...recipe, userId });
+      await api.put(`/api/recipes/${id}`, { ...recipe, userId });
       alert("Recipe updated successfully!");
       navigate(`/recipes/${id}`);
     } catch (err) {

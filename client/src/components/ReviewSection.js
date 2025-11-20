@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 
 function ReviewSection({ recipeId, onChange }) {
   const [reviews, setReviews] = useState([]);
@@ -18,7 +18,7 @@ function ReviewSection({ recipeId, onChange }) {
     try {
       setLoading(true);
       setError("");
-      const res = await axios.get(`http://localhost:5000/api/reviews/${recipeId}`);
+      const res = await api.get(`/api/reviews/${recipeId}`);
       console.log('Fetched reviews:', res.data);
       console.log('Current userId:', userId);
       setReviews(res.data);
@@ -43,7 +43,7 @@ function ReviewSection({ recipeId, onChange }) {
     }
     try {
       setError("");
-      await axios.post(`http://localhost:5000/api/reviews/${recipeId}`, {
+      await api.post(`/api/reviews/${recipeId}`, {
         comment: commentText,
         recipe: recipeId,
         user: userId,
@@ -66,7 +66,7 @@ function ReviewSection({ recipeId, onChange }) {
     }
     try {
       setError("");
-      const response = await axios.put(`http://localhost:5000/api/reviews/${id}`, {
+      const response = await api.put(`/api/reviews/${id}`, {
         comment: commentText,
       });
       console.log('Edit response:', response.data);
@@ -86,7 +86,7 @@ function ReviewSection({ recipeId, onChange }) {
     console.log('Deleting review:', id);
     try {
       setError("");
-      const response = await axios.delete(`http://localhost:5000/api/reviews/${id}`);
+      const response = await api.delete(`/api/reviews/${id}`);
       console.log('Delete response:', response.data);
       fetchReviews();
       // Notify parent to refresh recipe stats (average/count)

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 
 const NutritionTracker = ({ recipeId, servings = 1 }) => {
   const [nutritionData, setNutritionData] = useState(null);
@@ -65,7 +65,7 @@ const NutritionTracker = ({ recipeId, servings = 1 }) => {
 
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5000/api/recipes/${recipeId}`);
+      const response = await api.get(`/api/recipes/${recipeId}`);
       const recipe = response.data;
       
       if (recipe.ingredients) {

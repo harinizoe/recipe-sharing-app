@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./AddRecipe.css"; 
 import GoToRecipeListButton from './GoToRecipeListButton';
 
-import axios from "axios";
+import api from '../api';
 const AddRecipe = () => {
  
 
@@ -78,7 +78,7 @@ const handleSubmit = async (e) => {
   vegetarian: recipe.vegetarian === "Yes",
 };
 
-      const response = await axios.post("http://localhost:5000/api/recipes", payload);
+      const response = await api.post('/api/recipes', payload);
 
       alert("Recipe added successfully!");
       setRecipe({

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 
 const MealPlanningCalendar = () => {
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ const MealPlanningCalendar = () => {
     endOfWeek.setHours(23, 59, 59, 999);
 
     try {
-      const response = await axios.get(`http://localhost:5000/api/meal-plans`, {
+      const response = await api.get(`/api/meal-plans`, {
         params: {
           userId,
           startDate: startOfWeek.toISOString(),
@@ -53,7 +53,7 @@ const MealPlanningCalendar = () => {
 
   const fetchRecipes = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/recipes');
+      const response = await api.get('/api/recipes');
       setRecipes(response.data.recipes || response.data);
     } catch (error) {
       console.error('Error fetching recipes:', error);
@@ -62,7 +62,7 @@ const MealPlanningCalendar = () => {
 
   const fetchMealSuggestions = async (mealType) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/meal-plans/suggestions`, {
+      const response = await api.get(`/api/meal-plans/suggestions`, {
         params: { userId, mealType }
       });
       setMealSuggestions(response.data);
@@ -94,7 +94,7 @@ const MealPlanningCalendar = () => {
         }
       };
 
-      await axios.post('http://localhost:5000/api/meal-plans', {
+      await api.post('/api/meal-plans', {
         userId,
         date: selectedDate.toISOString(),
         meals: updatedMeals
@@ -117,7 +117,7 @@ const MealPlanningCalendar = () => {
     endOfWeek.setDate(startOfWeek.getDate() + 6);
 
     try {
-      await axios.post('http://localhost:5000/api/shopping-lists/generate', {
+      await api.post('/api/shopping-lists/generate', {
         userId,
         startDate: startOfWeek.toISOString(),
         endDate: endOfWeek.toISOString(),

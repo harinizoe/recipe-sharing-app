@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 
 const ShoppingListManager = () => {
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const ShoppingListManager = () => {
 
   const fetchShoppingLists = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/shopping-lists/${userId}`);
+      const response = await api.get(`/api/shopping-lists/${userId}`);
       setShoppingLists(response.data);
       if (response.data.length > 0 && !activeList) {
         setActiveList(response.data[0]);
@@ -36,7 +36,7 @@ const ShoppingListManager = () => {
     if (!newListName.trim()) return;
 
     try {
-      const response = await axios.post('http://localhost:5000/api/shopping-lists', {
+      const response = await api.post('/api/shopping-lists', {
         userId,
         name: newListName,
         items: []
@@ -54,7 +54,7 @@ const ShoppingListManager = () => {
 
   const updateList = async (updatedList) => {
     try {
-      const response = await axios.put(`http://localhost:5000/api/shopping-lists/${updatedList._id}`, updatedList);
+      const response = await api.put(`/api/shopping-lists/${updatedList._id}`, updatedList);
       
       setShoppingLists(lists => 
         lists.map(list => list._id === updatedList._id ? response.data : list)
@@ -136,7 +136,7 @@ const ShoppingListManager = () => {
     if (!window.confirm('Are you sure you want to delete this shopping list?')) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/shopping-lists/${listId}`);
+      await api.delete(`/api/shopping-lists/${listId}`);
       
       const updatedLists = shoppingLists.filter(list => list._id !== listId);
       setShoppingLists(updatedLists);

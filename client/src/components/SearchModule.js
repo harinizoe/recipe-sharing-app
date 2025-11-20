@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useNavigate } from 'react-router-dom';
 
 // Simple debounce function
@@ -36,7 +36,7 @@ const SearchModule = ({ onSearchResults, onFiltersChange }) => {
     debounce(async (query) => {
       if (query.length >= 2) {
         try {
-          const response = await axios.get(`http://localhost:5000/api/recipes/search/suggestions?query=${query}`);
+          const response = await api.get(`/api/recipes/search/suggestions?query=${query}`);
           setSuggestions(response.data.suggestions);
           setShowSuggestions(true);
         } catch (error) {
@@ -75,7 +75,7 @@ const SearchModule = ({ onSearchResults, onFiltersChange }) => {
         ...searchFilters
       });
 
-      const response = await axios.get(`http://localhost:5000/api/recipes?${params}`);
+      const response = await api.get(`/api/recipes?${params}`);
       onSearchResults && onSearchResults(response.data);
     } catch (error) {
       console.error('Error performing search:', error);

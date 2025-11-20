@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
@@ -13,7 +13,7 @@ const AdminUsers = () => {
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/users');
+      const res = await api.get('/api/users');
       setUsers(res.data);
     } catch (err) {
       console.error('Error fetching users:', err);
@@ -26,7 +26,7 @@ const AdminUsers = () => {
   const handleDelete = async (userId) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/users/${userId}`);
+        await api.delete(`/api/users/${userId}`);
         setUsers(users.filter(user => user._id !== userId));
         alert('User deleted successfully');
       } catch (err) {
@@ -43,7 +43,7 @@ const AdminUsers = () => {
 
   const handleUpdate = async (userId) => {
     try {
-      const res = await axios.put(`http://localhost:5000/api/users/${userId}`, editForm);
+      const res = await api.put(`/api/users/${userId}`, editForm);
       setUsers(users.map(user => user._id === userId ? res.data : user));
       setEditingUser(null);
       alert('User updated successfully');

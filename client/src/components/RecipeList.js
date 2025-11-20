@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import SearchModule from './SearchModule';
 import Pagination from './Pagination';
 
@@ -30,7 +30,7 @@ const RecipeList = () => {
 
   const fetchRecipes = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/recipes');
+      const res = await api.get('/api/recipes');
       if (res.data.recipes) {
         setRecipes(res.data.recipes);
         setPagination(res.data.pagination);
@@ -72,7 +72,7 @@ const RecipeList = () => {
         page: page.toString(),
         ...currentFilters
       });
-      const response = await axios.get(`http://localhost:5000/api/recipes?${params}`);
+      const response = await api.get(`/api/recipes?${params}`);
       setSearchResults(response.data);
       setRecipes(response.data.recipes);
       setPagination(response.data.pagination);

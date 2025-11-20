@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import ReviewSection from './ReviewSection';
 import RecipeRating from './RecipeRating';
 import FavoriteButton from './FavoriteButton';
@@ -17,7 +17,7 @@ const RecipeDetails = () => {
 
   const fetchRecipeDetails = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/recipes/${id}`);
+      const res = await api.get(`/api/recipes/${id}`);
       setRecipe(res.data);
       if (userId && res.data?.userId) {
         const ownerId = typeof res.data.userId === 'string' ? res.data.userId : res.data.userId?._id;
@@ -39,7 +39,7 @@ const RecipeDetails = () => {
     const confirmed = window.confirm('Are you sure you want to delete this recipe?');
     if (!confirmed) return;
     try {
-      await axios.delete(`http://localhost:5000/api/recipes/${id}`, { data: { userId } });
+      await api.delete(`/api/recipes/${id}`, { data: { userId } });
       alert('Recipe deleted successfully');
       navigate('/recipes');
     } catch (err) {

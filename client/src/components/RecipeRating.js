@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 
 const RecipeRating = ({ recipeId, currentRating = 0, totalRatings = 0, onRatingUpdate }) => {
   const [userRating, setUserRating] = useState(0);
@@ -18,7 +18,7 @@ const RecipeRating = ({ recipeId, currentRating = 0, totalRatings = 0, onRatingU
     if (!userId || !recipeId) return;
     
     try {
-      const response = await axios.get(`http://localhost:5000/api/recipes/${recipeId}/rating/${userId}`);
+      const response = await api.get(`/api/recipes/${recipeId}/rating/${userId}`);
       if (response.data.rating) {
         setUserRating(response.data.rating);
       }
@@ -36,7 +36,7 @@ const RecipeRating = ({ recipeId, currentRating = 0, totalRatings = 0, onRatingU
 
     setLoading(true);
     try {
-      const response = await axios.post(`http://localhost:5000/api/recipes/${recipeId}/rate`, {
+      const response = await api.post(`/api/recipes/${recipeId}/rate`, {
         userId,
         rating
       });

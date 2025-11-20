@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useNavigate } from "react-router-dom";
 function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -13,7 +13,7 @@ function Login() {
     e.preventDefault();
 
     try {
-      const res = await axios.post('http://localhost:5000/api/users/login', form);
+      const res = await api.post('/api/users/login', form);
       alert(res.data.message || "Login successful");
       localStorage.setItem('userId', res.data.userId);
       navigate("/recipes");
