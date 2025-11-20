@@ -1,0 +1,48 @@
+.recipe-form-container {
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 20px;
+  border-radius: 12px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.recipe-form-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: bold;
+  font-size: 1.8rem;
+}
+
+.recipe-form-container label {
+  font-weight: 500;
+  margin-bottom: 4px;
+  display: inline-block;
+}
+
+.recipe-form-container input,
+.recipe-form-container textarea,
+.recipe-form-container select {
+  margin-bottom: 15px;
+  border-radius: 6px;
+}
+
+.recipe-form-container .btn {
+  padding: 12px;
+  font-size: 1rem;
+  border-radius: 8px;
+}
+
+.recipe-form-container .img-fluid {
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  max-height: 250px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* Removed dark theme styles */
+
+.recipe-form-container.bg-light {
+  background-color: #ffffff !important;
+  color: #000000;
+}
