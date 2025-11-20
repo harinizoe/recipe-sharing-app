@@ -4,6 +4,7 @@ const {
   createRecipe,
   getAllRecipes,
   getRecipeById,
+  getRecipesByUser,
   updateRecipe,
   deleteRecipe,
   getSearchSuggestions,
@@ -14,6 +15,7 @@ const {
 router.post('/', createRecipe);
 router.get('/search/suggestions', getSearchSuggestions);
 router.get('/', getAllRecipes);
+router.get('/user/:userId', getRecipesByUser);
 router.post('/:id/rate', rateRecipe);
 router.get('/:id/rating/:userId', getUserRating);
 router.get('/:id', getRecipeById);

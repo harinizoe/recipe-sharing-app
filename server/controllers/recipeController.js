@@ -138,6 +138,25 @@ exports.getAllRecipes = async (req, res) => {
   }
 };
 
+// Get all recipes created by a specific user
+exports.getRecipesByUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!userId) {
+      return res.status(400).json({ error: 'User ID is required' });
+    }
+
+    const recipes = await Recipe.find({ userId })
+      .sort({ createdAt: -1 })
+      .populate('userId', 'name');
+
+    res.status(200).json({ recipes });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 
 
 // Get one recipe by ID
@@ -157,12 +176,21 @@ exports.updateRecipe = async (req, res) => {
     if (!recipe) return res.status(404).json({ error: 'Recipe not found' });
 
     // Compare owner (assume req.body.userId is sent from frontend)
-    if (recipe.userId.toString() !== req.body.userId) {
+    const requestUserId = req.body.userId;
+    if (!requestUserId) {
+      return res.status(400).json({ error: 'User ID is required to update a recipe' });
+    }
+
+    if (recipe.userId.toString() !== requestUserId) {
       return res.status(403).json({ error: 'Not authorized to edit this recipe' });
     }
 
+    // Prevent ownership reassignment
+    const updates = { ...req.body };
+    delete updates.userId;
+
     // Update and save
-    Object.assign(recipe, req.body);
+    Object.assign(recipe, updates);
     await recipe.save();
     res.status(200).json({ message: 'Recipe updated successfully', recipe });
   } catch (err) {
@@ -174,8 +202,21 @@ exports.updateRecipe = async (req, res) => {
 // Delete recipe
 exports.deleteRecipe = async (req, res) => {
   try {
-    const recipe = await Recipe.findByIdAndDelete(req.params.id);
+    const { id } = req.params;
+    const requestUserId = req.body.userId || req.query.userId;
+
+    if (!requestUserId) {
+      return res.status(400).json({ error: 'User ID is required to delete a recipe' });
+    }
+
+    const recipe = await Recipe.findById(id);
     if (!recipe) return res.status(404).json({ error: "Recipe not found" });
+
+    if (recipe.userId.toString() !== requestUserId) {
+      return res.status(403).json({ error: 'Not authorized to delete this recipe' });
+    }
+
+    await recipe.deleteOne();
     res.status(200).json({ message: "Recipe deleted" });
   } catch (err) {
     res.status(500).json({ error: err.message });
